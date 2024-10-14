@@ -120,9 +120,11 @@ def has_shine_dalgarno(shine_regex: Pattern, sequence: str, start: int, max_shin
         return False
 
     subsequence = sequence[search_start:search_end]
-    match = shine_regex.search(subsequence)
     
-    return match is not None
+    if shine_regex.search(subsequence):
+        return True
+    else:
+        return False
 
 
 def predict_genes(sequence: str, start_regex: Pattern, stop_regex: Pattern, shine_regex: Pattern, 
@@ -149,7 +151,7 @@ def predict_genes(sequence: str, start_regex: Pattern, stop_regex: Pattern, shin
             stop_codon_position = find_stop(stop_regex, sequence, start_codon_position)
 
             if stop_codon_position is not None:
-                gene_length = stop_codon_position - start_codon_position + 3            
+                gene_length = stop_codon_position - start_codon_position
 
                 if gene_length >= min_gene_len:
                     if has_shine_dalgarno(shine_regex, sequence, start_codon_position, max_shine_dalgarno_distance):
@@ -247,6 +249,7 @@ def main() -> None: # pragma: no cover
         [length_sequence - stop + 1, length_sequence - start + 1]
         for start, stop in pos_genes_reverse
     ]
+
     # Call to output functions
     predicted_genes = pos_genes + pos_genes_reverse_converted
     write_genes_pos(args.predicted_genes_file, predicted_genes)
